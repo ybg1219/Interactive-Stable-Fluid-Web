@@ -1,0 +1,42 @@
+name: Deploy to GitHub Pages
+
+# main 브랜치에 push될 때마다 실행
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. 리포지토리 체크아웃
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # 2. Node.js 설치
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      # 3. 의존성 설치 (npm)
+      - name: Install dependencies
+        run: npm ci
+
+      # 4. 빌드
+      - name: Build project
+        env:
+          PUBLIC_URL: /WebProject/
+        run: npm run build
+
+      # 5. GitHub Pages에 배포
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with: 
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist 
+          user_name: "ybg1219" 
+          user_email: "12202057@inha.edu" 
+          commit_message: "Deploy to GitHub Pages [skip ci]"
