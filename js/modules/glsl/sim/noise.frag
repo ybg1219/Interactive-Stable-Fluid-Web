@@ -1,8 +1,8 @@
 precision highp float;
 uniform vec2 fboSize;
 uniform float u_time;
-uniform vec2 px;
-uniform float dt;
+uniform float strength;
+// uniform vec2 px;
 varying vec2 uv;
 
 // --- 2D Simplex Noise 함수 ---
@@ -118,5 +118,5 @@ void main() {
 
     // 속도 벡터를 시각화합니다.
     // x축 속도는 R(빨강) 채널, y축 속도는 G(초록) 채널에 매핑합니다.
-    gl_FragColor = vec4( curl * 0.005 , 0.0, 1.0);
+    gl_FragColor = vec4( curl * 0.01 * strength , 0.0, 1.0);
 }

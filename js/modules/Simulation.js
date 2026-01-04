@@ -74,7 +74,8 @@ export default class Simulation {
         this.options = { // reference 값으로 변경 하자마자 값이 바뀜.
             iterations_poisson: 32,
             iterations_viscous: 32,
-            osc_strength: 0.1,
+            osc_strength: 0.04,
+            n_strength: 0.02,
             mouse_force: 15,
             resolution: 0.5,
             cursor_size: 60,
@@ -156,6 +157,7 @@ export default class Simulation {
             dst: this.fbos.vel_1,
         });
         this.harmonicLeft = new Harmonic({
+            strength : this.options.osc_strength,
             cellScale: this.cellScale,
             cursor_size: this.options.cursor_size,
             dst: this.fbos.vel_1,
@@ -163,6 +165,7 @@ export default class Simulation {
             timeSeed: Math.random() * 1000.0
         });
         this.harmonicRight = new Harmonic({
+            strength : this.options.osc_strength,
             cellScale: this.cellScale,
             cursor_size: this.options.cursor_size,
             dst: this.fbos.vel_1,
@@ -171,11 +174,11 @@ export default class Simulation {
         });
 
         this.noise = new Noise({
+            strength : this.options.n_strength,
             cellScale: this.cellScale,
             velocity: this.fbos.vel_0,
             dst: this.fbos.vel_1,
-            fboSize: this.fboSize,
-            dt: this.options.dt,
+            fboSize: this.fboSize
         });
 
         this.buoyancy = new Buoyancy({
@@ -390,6 +393,7 @@ export default class Simulation {
                     this.harmonicLeft.update({
                         left: leftHand,
                         right: leftElbow,
+                        osc_strength : this.options.osc_strength,
                         cursor_size: this.options.cursor_size,
                         dt: this.options.dt,
                         cellScale: this.cellScale,
@@ -402,6 +406,7 @@ export default class Simulation {
                     this.harmonicRight.update({
                         left: rightHand,
                         right: rightElbow,
+                        osc_strength : this.options.osc_strength,
                         cursor_size: this.options.cursor_size,
                         dt : this.options.dt,
                         cellScale: this.cellScale,
@@ -410,7 +415,7 @@ export default class Simulation {
                 }
             });
         }
-        // this.vortex.update({ fboSize: this.fboSize });
+        this.noise.update({ fboSize: this.fboSize, dt: this.options.dt, strength : this.options.n_strength });
         this.buoyancy.update({
             density: this.fbos.density_0,
             buoyancy: this.options.buoyancy, // (부력 강도)

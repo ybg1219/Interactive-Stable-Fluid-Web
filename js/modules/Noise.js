@@ -15,6 +15,9 @@ export default class Noise extends ShaderPass {
                 fragmentShader: noise_frag,
                 blending: THREE.AdditiveBlending,
                 uniforms: {
+                    strength: { 
+                        value: simProps.strength || 0.1 
+                    },
                     fboSize: {
                         value: simProps.fboSize
                     },
@@ -42,9 +45,10 @@ export default class Noise extends ShaderPass {
         super.init();
     }
 
-    update({ fboSize }) {
+    update({ fboSize, dt, strength }) {
         this.uniforms.fboSize.value = fboSize;
-        this.uniforms.u_time.value += this.uniforms.dt.value;
+        this.uniforms.u_time.value += dt;
+        this.uniforms.strength.value = strength;
 
         super.update();
     }

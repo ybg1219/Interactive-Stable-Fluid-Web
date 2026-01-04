@@ -129,7 +129,8 @@ export default class Controls {
 
         // --- 3. 컨트롤 추가 (기존 코드) ---
         this.gui.add(this.params, "isMouse");
-        this.gui.add(this.params, "osc_strength", 0.01, 0.5);
+        this.gui.add(this.params, "osc_strength", 0.001, 0.1);
+        this.gui.add(this.params, "n_strength", 0.001, 0.5);
         this.gui.add(this.params, "buoyancy", 0.001, 0.3);
         this.gui.add(this.params, "mouse_force", 5, 60);
         this.gui.add(this.params, "cursor_size", 30, 120);
