@@ -20,6 +20,11 @@ export default class Controls {
             /* --- dat.GUI 커스텀 스타일 --- */
 
             /* 1. 색상 테마 (어두운 테마 예시) */
+
+            .dg {
+                text-shadow: none !important;
+                font-family: 'Arial', sans-serif; /* 폰트도 깔끔하게 변경 추천 */
+            }
             .dg.main {
                 background-color: #1e40af !important; /* 메인 배경 */
                 border: 1px solid #333;
@@ -34,6 +39,7 @@ export default class Controls {
                 background: #1e40af !important; 
                 border-bottom: 1px solid #333;
                 color: #eee;
+                text-shadow: none !important; /* 타이틀바도 확실하게 제거 */3;
             }
             .dg .cr.title .title-label {
                 color: #eee !important;
@@ -105,7 +111,7 @@ export default class Controls {
     }
 
     init() {
-        this.gui = new dat.GUI({ width: 250 });
+        this.gui = new dat.GUI({ width: 300 });
 
         // --- 1. 위치 변경 ---
         // dat.GUI의 메인 DOM 요소를 가져옵니다.
@@ -117,7 +123,7 @@ export default class Controls {
         // 상단에서 50% 위치로 이동
         guiElement.style.top = '30%';       
         // Y축으로 -50% 만큼 이동하여 세로 중앙 정렬
-        guiElement.style.transform = 'translateY(0%)'; 
+        // guiElement.style.transform = 'scale(1.5)'; 
         
         // 왼쪽(left) 속성 해제
         guiElement.style.left = '5%';
