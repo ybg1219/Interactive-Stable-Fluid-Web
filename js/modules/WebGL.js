@@ -90,7 +90,7 @@ export default class Webgl {
         // [중요] 실제 서비스 시에는 startCamera를 사용해야 합니다.
         // await VideoManager.startCamera(); 
         
-        const videoPath = `${process.env.PUBLIC_URL}videos/image.mp4`;
+        const videoPath = `${process.env.PUBLIC_URL}videos/hiphop.mp4`;
         await VideoManager.loadVideoFile(videoPath);
     }
 

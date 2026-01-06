@@ -29,7 +29,7 @@ export default class Output{
             new THREE.PlaneGeometry(2, 2),
             new THREE.RawShaderMaterial({
                 vertexShader: face_vert,
-                fragmentShader: color_grad,
+                fragmentShader: color_heat,
                 transparent: true,
                 uniforms: {
                     density: {
