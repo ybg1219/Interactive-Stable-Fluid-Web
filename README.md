@@ -6,7 +6,7 @@ An interactive web-based framework for visualizing real-time pose-driven fluid (
 This project implements and visualizes a novel fluid interaction framework designed to overcome the limitations of conventional global noise methods. By combining **Harmonic Function Mapping** for localized control and **Simplex Noise** for natural turbulence, this framework provides a robust solution for generating high-fidelity smoke effects that react dynamically to user gestures directly in a web browser.
 
 ## Live Demo
-[![Live Demo Thumbnail](readme/demo.gif)](https://github.com/ybg1219/Interactive-Stable-Fluid-Web)
+[![Live Demo Thumbnail](readme/demo.gif)](https://ybg1219.github.io/Interactive-Stable-Fluid-Web/)
 
 ↑ ↑ **Click the image above to see the simulation in action** ↑ ↑
 
