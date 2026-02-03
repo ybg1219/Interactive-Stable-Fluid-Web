@@ -9,9 +9,9 @@ if (!window.isDev) window.isDev = false;
  */
 (function main() {
     setupBodyStyles();
-    initWebGL();
-    createWebcamToggleUI();
-    setupWebcamToggleEvent();
+    // initWebGL(); // 기존 바로 실행 코드 주석 처리
+    createCameraPermissionUI(); // 권한 요청 UI 먼저 생성
+    // createWebcamToggleUI(); // 이 UI는 initWebGL 완료 후 생성하는 것이 좋으나, 우선 권한 UI부터 처리
 })();
 
 /**
@@ -25,18 +25,97 @@ function setupBodyStyles() {
 /**
  * 2. WebGL 인스턴스 생성
  * Canvas가 document.body에 추가됩니다.
+ * @param {boolean} useWebcam - 웹캠 사용 여부
  */
-function initWebGL() {
+function initWebGL(useWebcam) {
     new WebGL({
-        $wrapper: document.body
+        $wrapper: document.body,
+        useWebcam: useWebcam
+    });
+
+    // WebGL 초기화 후 토글 UI 생성
+    createWebcamToggleUI();
+    setupWebcamToggleEvent();
+}
+
+/**
+ * 초기 카메라 권한 요청 UI 생성
+ */
+function createCameraPermissionUI() {
+    const uiContainer = document.createElement('div');
+    uiContainer.id = 'camera-permission-ui';
+    uiContainer.className = "absolute inset-0 z-[100] flex items-center justify-center bg-gray-900/95 backdrop-blur-sm";
+
+    uiContainer.innerHTML = `
+        <div class="relative flex flex-col items-center gap-6 p-10 max-w-md w-full bg-gray-800/80 backdrop-blur-xl border border-white/10 rounded-3xl shadow-2xl text-center transform transition-all duration-300 scale-100">
+            
+            <div class="w-20 h-20 bg-indigo-600/20 rounded-full flex items-center justify-center mb-2">
+                <span class="text-4xl">📷</span>
+            </div>
+
+            <div class="space-y-2">
+                <h2 class="text-2xl font-bold text-white tracking-tight">카메라 권한 요청</h2>
+                <p class="text-gray-300 text-sm leading-relaxed">
+                    이 웹사이트는 웹캠을 배경으로 사용하여<br/>
+                    <span class="text-indigo-400 font-semibold">증강 현실 유체 시뮬레이션</span>을 제공합니다.
+                </p>
+            </div>
+
+            <div class="w-full space-y-3 pt-2">
+                <button id="btn-allow-camera" class="w-full group relative flex items-center justify-center bg-indigo-600 hover:bg-indigo-500 text-white text-base font-bold py-4 rounded-xl shadow-lg transition-all duration-200 overflow-hidden">
+                    <span class="relative z-10">웹캠 허용하고 시작하기</span>
+                    <div class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+                </button>
+
+                <button id="btn-deny-camera" class="w-full group relative flex items-center justify-center bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white text-sm font-medium py-3 rounded-xl transition-all duration-200 border border-white/5 hover:border-white/10">
+                    대체 비디오로 테스트하기
+                </button>
+            </div>
+
+            <p class="text-gray-500 text-xs">
+                * 카메라는 오직 실시간 반응형 배경으로만 사용되며,<br/>서버에 저장되거나 전송되지 않습니다.
+            </p>
+        </div>
+    `;
+
+    document.body.appendChild(uiContainer);
+
+    // 이벤트 리스너
+    document.getElementById('btn-allow-camera').addEventListener('click', () => {
+        handlePermissionChoice(true);
+    });
+
+    document.getElementById('btn-deny-camera').addEventListener('click', () => {
+        handlePermissionChoice(false);
     });
 }
 
 /**
- * 3. 웹캠 토글 UI 생성 및 DOM 추가
+ * 권한 선택 처리
+ */
+function handlePermissionChoice(allowed) {
+    const ui = document.getElementById('camera-permission-ui');
+    if (ui) {
+        // 부드럽게 사라지는 효과
+        ui.style.opacity = '0';
+        ui.style.transition = 'opacity 0.5s ease-out';
+        setTimeout(() => {
+            ui.remove();
+        }, 500);
+    }
+
+    initWebGL(allowed);
+}
+
+/**
+ * 3. 웹캠 토글 UI 생성 및 DOM 추가 (기존 코드 유지)
  */
 function createWebcamToggleUI() {
+    // 중복 생성 방지
+    if (document.getElementById('webcam-ui-container')) return;
+
     const uiContainer = document.createElement('div');
+    uiContainer.id = 'webcam-ui-container';
     // UI 컨테이너는 클릭 이벤트를 통과시키도록 설정 (pointer-events-none)
     uiContainer.className = "absolute inset-0 z-50 pointer-events-none";
 
@@ -76,7 +155,7 @@ function setupWebcamToggleEvent() {
     const btnToggle = document.getElementById('btn-enable-webcam');
     const btnText = document.getElementById('btn-text');
     const btnIcon = document.getElementById('btn-icon');
-    
+
     let isWebcamVisible = false; // 현재 웹캠 상태 추적
 
     if (!btnToggle) return;
@@ -84,14 +163,14 @@ function setupWebcamToggleEvent() {
     btnToggle.addEventListener('click', () => {
         // VideoManager에서 비디오 엘리먼트 가져오기
         const video = VideoManager.getElement();
-        
+
         if (video) {
             isWebcamVisible = !isWebcamVisible;
-            
+
             // 비디오 투명도 조절로 토글 (0: 안보임, 1: 보임)
             // (WebGL 배경이 투명해야 웹캠이 보입니다. WebGL 생성 시 alpha: true 확인 필요)
             video.style.opacity = isWebcamVisible ? '0.3' : '0';
-            
+
             // 버튼 UI 업데이트
             updateToggleButtonUI(isWebcamVisible, btnText, btnIcon, btnToggle);
         } else {

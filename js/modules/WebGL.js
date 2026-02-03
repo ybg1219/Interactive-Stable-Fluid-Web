@@ -8,6 +8,7 @@ import CanvasManager from "./CanvasManager";
 export default class Webgl {
     constructor(props) {
         this.props = props; // document.body를 받아옴.
+        this.useWebcam = props.useWebcam; // 웹캠 사용 여부
         this._destroyed = false;
         this.animationFrameId = null;
 
@@ -62,9 +63,9 @@ export default class Webgl {
     async init() {
         this.setupDOM();
         await this.setupVideo();
-        
+
         Mouse.init();
-        
+
         await this.setupTracker();
         this.setupOutput();
     }
@@ -87,11 +88,21 @@ export default class Webgl {
      * 비디오 리소스 로드
      */
     async setupVideo() {
-        // [중요] 실제 서비스 시에는 startCamera를 사용해야 합니다.
-        // await VideoManager.startCamera(); 
-        
         const videoPath = `${process.env.PUBLIC_URL}videos/hiphop.mp4`;
-        await VideoManager.loadVideoFile(videoPath);
+
+        if (this.useWebcam) {
+            try {
+                // 사용자가 권한을 허용했으므로 웹캠 시작 시도
+                await VideoManager.startCamera();
+            } catch (error) {
+                console.warn("웹캠 시작 실패, 기본 비디오로 대체합니다.", error);
+                alert("웹캠을 시작할 수 없어 기본 비디오로 실행합니다.");
+                await VideoManager.loadVideoFile(videoPath);
+            }
+        } else {
+            // 사용자가 "대체 비디오로 테스트"를 선택한 경우
+            await VideoManager.loadVideoFile(videoPath);
+        }
     }
 
     /**
@@ -106,7 +117,7 @@ export default class Webgl {
             // BodyTracking 모듈이 있다면 사용 (현재는 Fallback)
             // console.log("Initializing Single-person Tracker");
             // this.activeTracker = BodyTracking;
-            this.activeTracker = Tracking; 
+            this.activeTracker = Tracking;
         }
 
         // 트래커 초기화
@@ -168,7 +179,7 @@ export default class Webgl {
         if (this.stats) this.stats.begin();
         this.render();
         if (this.stats) this.stats.end();
-        this.animationFrameId = requestAnimationFrame(this.loop.bind(this)); 
+        this.animationFrameId = requestAnimationFrame(this.loop.bind(this));
     }
 
     /**
